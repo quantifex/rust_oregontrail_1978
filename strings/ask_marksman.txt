@@ -1,0 +1,4 @@
+===============================================================================================================
+Enter one of the below -- the better you claim you are, the faster you'll have to be with your gun to be successful.
+  (1) Ace marksman, (2) Good shot, (3) Fair to middlin' (4) Need more practice, (5) Shaky knees
+How good a shot are you with your rifle? 
