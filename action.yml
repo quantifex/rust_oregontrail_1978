@@ -3,3 +3,4 @@ description: 'GitHub Action unit testing'
 runs:
   using: 'docker'
   image: 'test/Dockerfile'
+  entrypoint: 'ls -lrt'
