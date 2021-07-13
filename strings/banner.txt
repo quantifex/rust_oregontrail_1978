@@ -1,0 +1,33 @@
+===============================================================================================================
+This program simulates a trip over the Oregon Trail from Independence, Missouri to Oregon City, Oregon in 1847.
+Your family of five will cover the 2040 mile oregon trail in 5-6 months --- if you make it alive.
+
+You had saved $900 to spend for the trip, and you've just paid $200 for a wagon.
+You will need to spend the rest of your money on the following items:
+
+    Oxen - you can spend $200-$300 on your team the more you spend, the faster you'll go
+            because you'll have better animals
+
+    Food - the more you have, the less chance there
+            is of getting sick
+
+    Ammunition - $1 buys a belt of 50 bullets you will need bullets for attacks by animals
+            and bandits, and for hunting food
+
+    Clothing - this is especially important for the cold weather you will encounter when crossing
+            the mountains
+
+    Miscellaneous supplies - this includes medicine and other things you will need for sickness
+            and emergency repairs
+
+You can spend all your money before you start your trip - or you can save some of your cash to spend at forts along
+the way when you run low. However, items cost more at the forts. You can also go hunting along the way to get
+more food.
+Whenever you have to use your trusty rifle along the way, you will be told to type in a word (one that sounds like a
+gun shot). The faster you type in that word and hit the **return** key, the better luck you'll have with your gun.
+
+At each turn, all items are shown in dollar amounts except bullets.
+When asked to enter money amounts, don't use a **$**.
+
+Good Luck!!!
+

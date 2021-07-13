@@ -1,0 +1,5 @@
+name: 'Oregon Trail 1978 - Unit Test'
+description: 'GitHub Action unit testing'
+runs:
+  using: 'docker'
+  image: 'Dockerfile.test'

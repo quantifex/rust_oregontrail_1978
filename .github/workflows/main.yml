@@ -1,0 +1,10 @@
+on: [push]
+
+jobs:
+  unit_test_job:
+    runs-on: ubuntu-latest
+    name: Unit Testing
+    steps:
+      - name: Unit testing action step
+        id: unit_test
+        uses: actions/rust_oregontrail_1978@v1
