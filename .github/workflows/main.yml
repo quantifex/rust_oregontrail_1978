@@ -7,4 +7,4 @@ jobs:
     steps:
       - name: Unit testing action step
         id: unit_test
-        uses: quantifex/rust_oregontrail_1978@59eadf9fd155c4b80c3a2b0adbb1c03d0523955f
+        uses: quantifex/rust_oregontrail_1978@60362f87aa2907b8c7f95ca501dabf7845de8e3b
