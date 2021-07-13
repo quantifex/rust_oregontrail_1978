@@ -1,13 +1,14 @@
 use std::io::{Write, BufRead, stdout, stdin};
+use crate::banner::*;
 use crate::marksman::*;
 use crate::supplies::*;
 
-#[cfg(test)]
-mod tests;
+mod banner;
 mod ask;
 mod marksman;
 mod supplies;
 
+// GCOVR_EXCL_START
 fn main() {
     let mut stdout = stdout();
     let stdin = stdin();
@@ -27,10 +28,37 @@ fn main() {
             Err(e) => println!("{}", e),
         }
     }
-}
 
-fn print_banner<W: Write>(out: &mut W) {
-    let banner = include_str!("../strings/banner.txt");
-    out.write(banner.as_bytes()).unwrap();
-    out.flush().unwrap();
+    loop {
+        let spend_food = ask!("How much do you want to spend on food? ", &mut stdout, &mut stdin.lock());
+        match supplies.buy_food(spend_food) {
+            Ok(_) => { break; }
+            Err(e) => println!("{}", e),
+        }
+    }
+
+    loop {
+        let spend_ammo = ask!("How much do you want to spend on ammunition? ", &mut stdout, &mut stdin.lock());
+        match supplies.buy_ammo(spend_ammo) {
+            Ok(_) => { break; }
+            Err(e) => println!("{}", e),
+        }
+    }
+
+    loop {
+        let spend_clothes = ask!("How much do you want to spend on clothing? ", &mut stdout, &mut stdin.lock());
+        match supplies.buy_clothes(spend_clothes) {
+            Ok(_) => { break; }
+            Err(e) => println!("{}", e),
+        }
+    }
+
+    loop {
+        let spend_misc = ask!("How much do you want to spend on miscellaneous supplies? ", &mut stdout, &mut stdin.lock());
+        match supplies.buy_misc(spend_misc) {
+            Ok(_) => { break; }
+            Err(e) => println!("{}", e),
+        }
+    }
 }
+// GCOVR_EXCL_STOP

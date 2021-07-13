@@ -18,7 +18,7 @@ rustup toolchain install nightly
 # Test w/ code coverage
 export RUSTFLAGS="-Zinstrument-coverage"
 cargo +nightly test
-grcov . --binary-path target/debug -s . -t html --branch --ignore-not-existing -o ./coverage/
+grcov . --binary-path target/debug -s . -t html --branch --ignore-not-existing --excl-start "// GCOVR_EXCL_START" --excl-stop "// GCOVR_EXCL_STOP" -o ./coverage/
 ```
 
 ## Build

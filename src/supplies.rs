@@ -4,6 +4,10 @@ use std::error::Error;
 pub struct Supplies {
     money: u32,
     spent_on_oxen: u32,
+    spent_on_food: u32,
+    spent_on_ammo: u32,
+    spent_on_clothes: u32,
+    spent_on_misc: u32
 }
 
 #[derive(PartialEq)]
@@ -42,7 +46,11 @@ impl Supplies {
     pub fn new() -> Supplies {
         Supplies {
             money: 700,
-            spent_on_oxen: 0
+            spent_on_oxen: 0,
+            spent_on_food: 0,
+            spent_on_ammo: 0,
+            spent_on_clothes: 0,
+            spent_on_misc: 0
         }
     }
 
@@ -58,11 +66,65 @@ impl Supplies {
         self.money -= spend;
         Ok(())    
     }
+
+    pub fn buy_food(&mut self, spend: u32) -> Result<(), BuyError> {
+        if spend > self.money {
+            return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
+        }
+        self.spent_on_food = spend;
+        self.money -= spend;
+        Ok(())    
+    }
+
+    pub fn buy_ammo(&mut self, spend: u32) -> Result<(), BuyError> {
+        if spend > self.money {
+            return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
+        }
+        self.spent_on_ammo = spend;
+        self.money -= spend;
+        Ok(())    
+    }
+
+    pub fn buy_clothes(&mut self, spend: u32) -> Result<(), BuyError> {
+        if spend > self.money {
+            return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
+        }
+        self.spent_on_clothes = spend;
+        self.money -= spend;
+        Ok(())    
+    }
+
+    pub fn buy_misc(&mut self, spend: u32) -> Result<(), BuyError> {
+        if spend > self.money {
+            return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
+        }
+        self.spent_on_misc = spend;
+        self.money -= spend;
+        Ok(())    
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_buyerror_toolittle() {
+        let buy_error = BuyError{ min_required: 0, max_allowed: 0, requested: 0, available: 0, reason: BuyErrorType::TooLittle };
+        println!("{}", buy_error)
+    }
+
+    #[test]
+    fn test_buyerror_toomuch() {
+        let buy_error = BuyError{ min_required: 0, max_allowed: 0, requested: 0, available: 0, reason: BuyErrorType::TooMuch };
+        println!("{}", buy_error)
+    }
+
+    #[test]
+    fn test_buyerror_insufficient() {
+        let buy_error = BuyError{ min_required: 0, max_allowed: 0, requested: 0, available: 0, reason: BuyErrorType::InsufficientFunds };
+        println!("{}", buy_error)
+    }
 
     #[test]
     fn test_supplies_constructor() {
@@ -75,10 +137,7 @@ mod tests {
     #[test]
     fn test_supplies_buy_oxen_success() {
         let mut supplies = Supplies::new();
-        match supplies.buy_oxen(200) {
-            Ok(_) => {},
-            Err(e) => panic!("{}", e),
-        }
+        supplies.buy_oxen(200).unwrap();
     
         assert_eq!(500, supplies.money);
         assert_eq!(200, supplies.spent_on_oxen);
@@ -87,16 +146,9 @@ mod tests {
     #[test]
     fn test_supplies_buy_oxen_too_little() {
         let mut supplies = Supplies::new();
-        match supplies.buy_oxen(0) {
-            Ok(_) => panic!("failure expected due to too little spent"),
-            Err(e) => {
-                match e.reason {
-                    BuyErrorType::TooLittle => {},
-                    _ => panic!("expected BuyErrorType::TooLittle"),
-                }
-            },
-        }
-    
+        let reason = supplies.buy_oxen(0).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::TooLittle, reason);
         assert_eq!(700, supplies.money);
         assert_eq!(0, supplies.spent_on_oxen);
     }
@@ -104,16 +156,9 @@ mod tests {
     #[test]
     fn test_supplies_buy_oxen_too_much() {
         let mut supplies = Supplies::new();
-        match supplies.buy_oxen(301) {
-            Ok(_) => panic!("failure expected due to too much spent"),
-            Err(e) => {
-                match e.reason {
-                    BuyErrorType::TooMuch => {},
-                    _ => panic!("expected BuyErrorType::TooMuch"),
-                }
-            },
-        }
-    
+        let reason = supplies.buy_oxen(301).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::TooMuch, reason);
         assert_eq!(700, supplies.money);
         assert_eq!(0, supplies.spent_on_oxen);
     }
@@ -121,17 +166,86 @@ mod tests {
     #[test]
     fn test_supplies_buy_oxen_insufficient() {
         let mut supplies = Supplies::new();
-        match supplies.buy_oxen(1000) {
-            Ok(_) => panic!("failure expected due to insufficient"),
-            Err(e) => {
-                match e.reason {
-                    BuyErrorType::InsufficientFunds => {},
-                    _ => panic!("expected BuyErrorType::InsufficientFunds"),
-                }
-            },
-        }
-    
+        let reason = supplies.buy_oxen(1000).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::InsufficientFunds, reason);
         assert_eq!(700, supplies.money);
         assert_eq!(0, supplies.spent_on_oxen);
+    }
+
+    #[test]
+    fn test_supplies_buy_food_success() {
+        let mut supplies = Supplies::new();
+        supplies.buy_food(200).unwrap();
+    
+        assert_eq!(500, supplies.money);
+        assert_eq!(200, supplies.spent_on_food);
+    }
+
+    #[test]
+    fn test_supplies_buy_food_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.buy_food(1000).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::InsufficientFunds, reason);
+        assert_eq!(700, supplies.money);
+        assert_eq!(0, supplies.spent_on_food);
+    }
+
+    #[test]
+    fn test_supplies_buy_ammo_success() {
+        let mut supplies = Supplies::new();
+        supplies.buy_ammo(200).unwrap();
+    
+        assert_eq!(500, supplies.money);
+        assert_eq!(200, supplies.spent_on_ammo);
+    }
+
+    #[test]
+    fn test_supplies_buy_ammo_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.buy_ammo(1000).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::InsufficientFunds, reason);
+        assert_eq!(700, supplies.money);
+        assert_eq!(0, supplies.spent_on_ammo);
+    }
+
+    #[test]
+    fn test_supplies_buy_clothes_success() {
+        let mut supplies = Supplies::new();
+        supplies.buy_clothes(200).unwrap();
+    
+        assert_eq!(500, supplies.money);
+        assert_eq!(200, supplies.spent_on_clothes);
+    }
+
+    #[test]
+    fn test_supplies_buy_clothes_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.buy_clothes(1000).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::InsufficientFunds, reason);
+        assert_eq!(700, supplies.money);
+        assert_eq!(0, supplies.spent_on_clothes);
+    }
+
+    #[test]
+    fn test_supplies_buy_misc_success() {
+        let mut supplies = Supplies::new();
+        supplies.buy_misc(200).unwrap();
+    
+        assert_eq!(500, supplies.money);
+        assert_eq!(200, supplies.spent_on_misc);
+    }
+
+    #[test]
+    fn test_supplies_buy_misc_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.buy_misc(1000).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::InsufficientFunds, reason);
+        assert_eq!(700, supplies.money);
+        assert_eq!(0, supplies.spent_on_misc);
     }
 }
