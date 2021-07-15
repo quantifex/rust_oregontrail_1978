@@ -5,6 +5,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Unit Testing
     steps:
-      - name: Unit testing action step
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Unit test
         id: unit_test
-        uses: actions/rust_oregontrail_1978@v1
+        uses: quantifex/rust_oregontrail_1978@v1
+      - name: Archive code coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit_test_coverage
+          path: coverage/

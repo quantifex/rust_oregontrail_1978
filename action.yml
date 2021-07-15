@@ -1,5 +1,6 @@
-name: 'Oregon Trail 1978 - Unit Test'
-description: 'GitHub Action unit testing'
+name: 'Oregon Trail 1978 - Docker Actions'
+description: 'Docker Actions for the Rust based Oregon Trail (1978)'
 runs:
   using: 'docker'
-  image: 'Dockerfile.test'
+  image: 'Dockerfile'
+  entrypoint: './unit_test.sh'
