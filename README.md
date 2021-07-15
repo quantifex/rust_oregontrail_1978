@@ -1,4 +1,4 @@
-# rust_oregontrail_1978
+# Oregon Trail (1978 edition) in Rust
 
 [![codecov](https://codecov.io/gh/quantifex/rust_oregontrail_1978/branch/main/graph/badge.svg?token=PFJS3C0DS0)](https://codecov.io/gh/quantifex/rust_oregontrail_1978)
 
