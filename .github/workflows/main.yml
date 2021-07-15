@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Unit test
         id: unit_test
-        uses: quantifex/rust_oregontrail_1978@0ddcc22055612dcbcb847d1f8bd9c4d855595b83
+        uses: quantifex/rust_oregontrail_1978@111b483cc68001997e2186d59d6e5e39b4ccfcd9
       - name: Archive code coverage
         uses: actions/upload-artifact@v2
         with:
