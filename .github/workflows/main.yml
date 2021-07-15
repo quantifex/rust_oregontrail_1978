@@ -5,6 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Unit Testing
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Unit testing action step
         id: unit_test
         uses: quantifex/rust_oregontrail_1978/unit_test@3749d6e7fce8a65c04c83eb2d30b7b5ce72282b9
