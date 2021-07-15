@@ -1,5 +1,7 @@
 # rust_oregontrail_1978
 
+[![codecov](https://codecov.io/gh/quantifex/rust_oregontrail_1978/branch/main/graph/badge.svg?token=PFJS3C0DS0)](https://codecov.io/gh/quantifex/rust_oregontrail_1978)
+
 ## Development Environment
 ```shell
 docker build -t oregon .
