@@ -7,6 +7,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Unit testing action step
+      - name: Unit test
         id: unit_test
-        uses: quantifex/rust_oregontrail_1978/unit_test@3749d6e7fce8a65c04c83eb2d30b7b5ce72282b9
+        entrypoint: unit_test.sh
+        uses: quantifex/rust_oregontrail_1978@3749d6e7fce8a65c04c83eb2d30b7b5ce72282b9
+      - name: Archive code coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: unit_test_coverage
+          path: coverage/

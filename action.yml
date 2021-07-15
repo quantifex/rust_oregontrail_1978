@@ -1,0 +1,5 @@
+name: 'Oregon Trail 1978 - Docker Actions'
+description: 'Docker Actions for the Rust based Oregon Trail (1978)'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
