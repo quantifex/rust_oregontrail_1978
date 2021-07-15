@@ -4,4 +4,4 @@ RUN cargo install grcov
 RUN rustup component add llvm-tools-preview
 RUN rustup toolchain install nightly
 
-CMD ["/github/workspace/test/unit_test.sh"]
+CMD ["ls -larRt"]
