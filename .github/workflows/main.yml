@@ -15,3 +15,9 @@ jobs:
         with:
           name: unit_test_coverage
           path: coverage/
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          files: ./coverage/lcov.info # optional
+          flags: unit_test # optional
+          verbose: true
