@@ -54,6 +54,10 @@ impl Supplies {
         }
     }
 
+    pub fn money_left(&mut self) -> u32 {
+        self.money
+    }
+
     pub fn buy_oxen(&mut self, spend: u32) -> Result<(), BuyError> {
         if spend > self.money {
             return Err(BuyError{ min_required: 200, max_allowed: 300, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
@@ -132,6 +136,13 @@ mod tests {
     
         assert_eq!(700, supplies.money);
         assert_eq!(0, supplies.spent_on_oxen);
+    }
+
+    #[test]
+    fn test_supplies_money_left() {
+        let supplies = Supplies::new();
+        supplies.buy_oxen(200);
+        assert_eq!(500, supplies.money_left());
     }
 
     #[test]

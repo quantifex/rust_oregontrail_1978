@@ -1,5 +1,3 @@
-use std::str;
-use std::io::{Cursor, Read, Seek, SeekFrom};
 use crate::*;
 
 pub fn print_banner<W: Write>(out: &mut W) {

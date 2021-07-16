@@ -1,5 +1,3 @@
-use std::io::{Cursor, Write, BufRead, Seek, SeekFrom};
-
 #[macro_export]
 macro_rules! ask {
     ( $question: expr, $out: expr, $input: expr ) => {

@@ -60,5 +60,9 @@ fn main() {
             Err(e) => println!("{}", e),
         }
     }
+
+    println!("\n===============================================================================================================");
+    println!("After all your purchases, you now have ${} left\n", supplies.money_left());
+    println!("It is now Monday 29-March-1847\n")
 }
 // GCOVR_EXCL_STOP
