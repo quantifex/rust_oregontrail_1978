@@ -140,8 +140,8 @@ mod tests {
 
     #[test]
     fn test_supplies_money_left() {
-        let supplies = Supplies::new();
-        supplies.buy_oxen(200);
+        let mut supplies = Supplies::new();
+        supplies.buy_oxen(200).unwrap();
         assert_eq!(500, supplies.money_left());
     }
 

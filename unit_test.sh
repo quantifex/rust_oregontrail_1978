@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -rf coverage
+
 export RUSTFLAGS="-Zinstrument-coverage"
 cargo +nightly test
 # Print Code Coverage to the console
