@@ -1,14 +1,16 @@
 use std::io::{Write, BufRead, stdout, stdin};
+use chrono::NaiveDate;
 use crate::banner::*;
 use crate::marksman::*;
 use crate::supplies::*;
+use crate::mileage::*;
 
 mod banner;
 mod ask;
 mod marksman;
 mod supplies;
+mod mileage;
 
-// GCOVR_EXCL_START
 fn main() {
     let mut stdout = stdout();
     let stdin = stdin();
@@ -61,8 +63,22 @@ fn main() {
         }
     }
 
-    println!("\n===============================================================================================================");
+    let mut mileage = Mileage::new();
+    let mut trip_date: NaiveDate = NaiveDate::from_ymd(1847, 03, 29);
+    println!("\n=================================================================");
     println!("After all your purchases, you now have ${} left\n", supplies.money_left());
-    println!("It is now Monday 29-March-1847\n")
+    println!("It is now {}\n", trip_date.format("%A %d-%b-%Y"));
+
+    if supplies.food_left() <= 12 {
+        println!("You'd better do some hunting or buy some food, and soon!!!!");
+    }
+    println!("Total mileage traveled: {}", mileage.traveled());
+    println!("Supplies remaining:\n{}", supplies);
+
+    if mileage.traveled() >= 2040 {
+        complete_trip(&mut stdout, supplies);
+    }
+
+
+
 }
-// GCOVR_EXCL_STOP
