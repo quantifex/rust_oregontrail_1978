@@ -3,11 +3,11 @@ use std::error::Error;
 
 pub struct Supplies {
     money: u32,
-    spent_on_oxen: u32,
-    spent_on_food: u32,
-    spent_on_ammo: u32,
-    spent_on_clothes: u32,
-    spent_on_misc: u32
+    oxen: u32,
+    food: u32,
+    ammo: u32,
+    clothes: u32,
+    misc: u32
 }
 
 #[derive(PartialEq)]
@@ -42,16 +42,35 @@ impl fmt::Display for BuyError {
     }
 }
 
+impl fmt::Display for Supplies {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "\tFood\tAmmo\tClothes\tMisc\tMoney\n\t{}\t{}\t{}\t{}\t{}\n",
+            self.food, self.ammo, self.clothes, self.misc, self.money)
+    }
+}
+
 impl Supplies {
     pub fn new() -> Supplies {
         Supplies {
             money: 700,
-            spent_on_oxen: 0,
-            spent_on_food: 0,
-            spent_on_ammo: 0,
-            spent_on_clothes: 0,
-            spent_on_misc: 0
+            oxen: 0,
+            food: 0,
+            ammo: 0,
+            clothes: 0,
+            misc: 0
         }
+    }
+
+    pub fn money_left(&mut self) -> u32 {
+        self.money
+    }
+
+    pub fn food_left(&mut self) -> u32 {
+        self.food
+    }
+
+    pub fn oxen_left(&mut self) -> u32 {
+        self.oxen
     }
 
     pub fn buy_oxen(&mut self, spend: u32) -> Result<(), BuyError> {
@@ -62,7 +81,7 @@ impl Supplies {
         } else if spend > 300 {
             return Err(BuyError{ min_required: 200, max_allowed: 300, requested: spend, available: self.money, reason: BuyErrorType::TooMuch });
         }
-        self.spent_on_oxen = spend;
+        self.oxen = spend;
         self.money -= spend;
         Ok(())    
     }
@@ -71,7 +90,7 @@ impl Supplies {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
         }
-        self.spent_on_food = spend;
+        self.food = spend;
         self.money -= spend;
         Ok(())    
     }
@@ -80,7 +99,7 @@ impl Supplies {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
         }
-        self.spent_on_ammo = spend;
+        self.ammo = spend;
         self.money -= spend;
         Ok(())    
     }
@@ -89,7 +108,7 @@ impl Supplies {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
         }
-        self.spent_on_clothes = spend;
+        self.clothes = spend;
         self.money -= spend;
         Ok(())    
     }
@@ -98,7 +117,7 @@ impl Supplies {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
         }
-        self.spent_on_misc = spend;
+        self.misc = spend;
         self.money -= spend;
         Ok(())    
     }
@@ -131,7 +150,28 @@ mod tests {
         let supplies = Supplies::new();
     
         assert_eq!(700, supplies.money);
-        assert_eq!(0, supplies.spent_on_oxen);
+        assert_eq!(0, supplies.oxen);
+    }
+
+    #[test]
+    fn test_supplies_money_left() {
+        let mut supplies = Supplies::new();
+        supplies.buy_oxen(200).unwrap();
+        assert_eq!(500, supplies.money_left());
+    }
+
+    #[test]
+    fn test_supplies_food_left() {
+        let mut supplies = Supplies::new();
+        supplies.buy_food(200).unwrap();
+        assert_eq!(200, supplies.food_left());
+    }
+
+    #[test]
+    fn test_supplies_oxen_left() {
+        let mut supplies = Supplies::new();
+        supplies.buy_oxen(250).unwrap();
+        assert_eq!(250, supplies.oxen_left());
     }
 
     #[test]
@@ -140,7 +180,7 @@ mod tests {
         supplies.buy_oxen(200).unwrap();
     
         assert_eq!(500, supplies.money);
-        assert_eq!(200, supplies.spent_on_oxen);
+        assert_eq!(200, supplies.oxen);
     }
 
     #[test]
@@ -150,7 +190,7 @@ mod tests {
 
         assert_eq!(BuyErrorType::TooLittle, reason);
         assert_eq!(700, supplies.money);
-        assert_eq!(0, supplies.spent_on_oxen);
+        assert_eq!(0, supplies.oxen);
     }
 
     #[test]
@@ -160,7 +200,7 @@ mod tests {
 
         assert_eq!(BuyErrorType::TooMuch, reason);
         assert_eq!(700, supplies.money);
-        assert_eq!(0, supplies.spent_on_oxen);
+        assert_eq!(0, supplies.oxen);
     }
 
     #[test]
@@ -170,7 +210,7 @@ mod tests {
 
         assert_eq!(BuyErrorType::InsufficientFunds, reason);
         assert_eq!(700, supplies.money);
-        assert_eq!(0, supplies.spent_on_oxen);
+        assert_eq!(0, supplies.oxen);
     }
 
     #[test]
@@ -179,7 +219,7 @@ mod tests {
         supplies.buy_food(200).unwrap();
     
         assert_eq!(500, supplies.money);
-        assert_eq!(200, supplies.spent_on_food);
+        assert_eq!(200, supplies.food);
     }
 
     #[test]
@@ -189,7 +229,7 @@ mod tests {
 
         assert_eq!(BuyErrorType::InsufficientFunds, reason);
         assert_eq!(700, supplies.money);
-        assert_eq!(0, supplies.spent_on_food);
+        assert_eq!(0, supplies.food);
     }
 
     #[test]
@@ -198,7 +238,7 @@ mod tests {
         supplies.buy_ammo(200).unwrap();
     
         assert_eq!(500, supplies.money);
-        assert_eq!(200, supplies.spent_on_ammo);
+        assert_eq!(200, supplies.ammo);
     }
 
     #[test]
@@ -208,7 +248,7 @@ mod tests {
 
         assert_eq!(BuyErrorType::InsufficientFunds, reason);
         assert_eq!(700, supplies.money);
-        assert_eq!(0, supplies.spent_on_ammo);
+        assert_eq!(0, supplies.ammo);
     }
 
     #[test]
@@ -217,7 +257,7 @@ mod tests {
         supplies.buy_clothes(200).unwrap();
     
         assert_eq!(500, supplies.money);
-        assert_eq!(200, supplies.spent_on_clothes);
+        assert_eq!(200, supplies.clothes);
     }
 
     #[test]
@@ -227,7 +267,7 @@ mod tests {
 
         assert_eq!(BuyErrorType::InsufficientFunds, reason);
         assert_eq!(700, supplies.money);
-        assert_eq!(0, supplies.spent_on_clothes);
+        assert_eq!(0, supplies.clothes);
     }
 
     #[test]
@@ -236,7 +276,7 @@ mod tests {
         supplies.buy_misc(200).unwrap();
     
         assert_eq!(500, supplies.money);
-        assert_eq!(200, supplies.spent_on_misc);
+        assert_eq!(200, supplies.misc);
     }
 
     #[test]
@@ -246,6 +286,19 @@ mod tests {
 
         assert_eq!(BuyErrorType::InsufficientFunds, reason);
         assert_eq!(700, supplies.money);
-        assert_eq!(0, supplies.spent_on_misc);
+        assert_eq!(0, supplies.misc);
+    }
+
+    #[test]
+    fn test_supplies_display() {
+        let mut supplies = Supplies::new();
+        supplies.buy_oxen(200).unwrap();
+        supplies.buy_food(10).unwrap();
+        supplies.buy_ammo(20).unwrap();
+        supplies.buy_clothes(30).unwrap();
+        supplies.buy_misc(40).unwrap();
+
+        let supplies_display = format!("{}", &mut supplies);
+        assert_eq!("\tFood\tAmmo\tClothes\tMisc\tMoney\n\t10\t20\t30\t40\t400\n", supplies_display);
     }
 }

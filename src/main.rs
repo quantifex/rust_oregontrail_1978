@@ -1,14 +1,22 @@
-use std::io::{Write, BufRead, stdout, stdin};
+use std::io::*;
+use chrono::{NaiveDate, Duration};
 use crate::banner::*;
 use crate::marksman::*;
 use crate::supplies::*;
+use crate::mileage::*;
 
 mod banner;
 mod ask;
 mod marksman;
 mod supplies;
+mod mileage;
 
-// GCOVR_EXCL_START
+const ASK_OXEN_SPEND: &str = "How much do you want to spend on your oxen team? ";
+const ASK_FOOD_SPEND: &str = "How much do you want to spend on food? ";
+const ASK_AMMO_SPEND: &str = "How much do you want to spend on ammunition? ";
+const ASK_CLOTHES_SPEND: &str = "How much do you want to spend on clothing? ";
+const ASK_MISC_SPEND: &str = "How much do you want to spend on miscellaneous supplies? ";
+
 fn main() {
     let mut stdout = stdout();
     let stdin = stdin();
@@ -21,44 +29,40 @@ fn main() {
     }
 
     let mut supplies = Supplies::new();
-    loop {
-        let spend_oxen = ask!("How much do you want to spend on your oxen team? ", &mut stdout, &mut stdin.lock());
-        match supplies.buy_oxen(spend_oxen) {
-            Ok(_) => { break; }
-            Err(e) => println!("{}", e),
-        }
-    }
+    ask_ok!(supplies.buy_oxen(ask!(ASK_OXEN_SPEND, &mut stdout, &mut stdin.lock())));
+    ask_ok!(supplies.buy_food(ask!(ASK_FOOD_SPEND, &mut stdout, &mut stdin.lock())));
+    ask_ok!(supplies.buy_ammo(ask!(ASK_AMMO_SPEND, &mut stdout, &mut stdin.lock())));
+    ask_ok!(supplies.buy_clothes(ask!(ASK_CLOTHES_SPEND, &mut stdout, &mut stdin.lock())));
+    ask_ok!(supplies.buy_misc(ask!(ASK_MISC_SPEND, &mut stdout, &mut stdin.lock())));
+
+    let mut mileage = Mileage::new();
+    let mut trip_date: NaiveDate = NaiveDate::from_ymd(1847, 03, 29);
+    println!("After all your purchases, you now have ${} left\n", supplies.money_left());
 
     loop {
-        let spend_food = ask!("How much do you want to spend on food? ", &mut stdout, &mut stdin.lock());
-        match supplies.buy_food(spend_food) {
-            Ok(_) => { break; }
-            Err(e) => println!("{}", e),
+        println!("\n=================================================================");
+        if mileage.traveled() >= 2040 {
+            complete_trip(&mut stdout, &mut supplies);
+            std::process::exit(0);
         }
+
+        if supplies.food_left() <= 12 {
+            println!("You'd better do some hunting or buy some food, and soon!!!!");
+        }
+        println!("Total mileage traveled: {}", mileage.traveled());
+        println!("It is now {}\n", trip_date.format("%A %d-%b-%Y"));
+        println!("Supplies remaining:\n{}", supplies);
+
+        'turn_input: loop {
+            let turn_action = ask!("Do you want to?\n  1) Continue\n", &mut stdout, &mut stdin.lock());
+            match turn_action {
+                1 => break 'turn_input,
+                _ => continue 'turn_input,
+            }
+        }
+
+        trip_date += Duration::days(14);
+        mileage.turn(200, supplies.oxen_left());
     }
 
-    loop {
-        let spend_ammo = ask!("How much do you want to spend on ammunition? ", &mut stdout, &mut stdin.lock());
-        match supplies.buy_ammo(spend_ammo) {
-            Ok(_) => { break; }
-            Err(e) => println!("{}", e),
-        }
-    }
-
-    loop {
-        let spend_clothes = ask!("How much do you want to spend on clothing? ", &mut stdout, &mut stdin.lock());
-        match supplies.buy_clothes(spend_clothes) {
-            Ok(_) => { break; }
-            Err(e) => println!("{}", e),
-        }
-    }
-
-    loop {
-        let spend_misc = ask!("How much do you want to spend on miscellaneous supplies? ", &mut stdout, &mut stdin.lock());
-        match supplies.buy_misc(spend_misc) {
-            Ok(_) => { break; }
-            Err(e) => println!("{}", e),
-        }
-    }
 }
-// GCOVR_EXCL_STOP
