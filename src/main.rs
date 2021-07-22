@@ -14,6 +14,9 @@ mod mileage;
 
 const ASK_OXEN_SPEND: &str = "How much do you want to spend on your oxen team? ";
 const ASK_FOOD_SPEND: &str = "How much do you want to spend on food? ";
+const ASK_AMMO_SPEND: &str = "How much do you want to spend on ammunition? ";
+const ASK_CLOTHES_SPEND: &str = "How much do you want to spend on clothing? ";
+const ASK_MISC_SPEND: &str = "How much do you want to spend on miscellaneous supplies? ";
 
 fn main() {
     let mut stdout = stdout();
@@ -31,24 +34,21 @@ fn main() {
     ask_food(&mut stdout, &mut stdin.lock(), &mut supplies);
 
     loop {
-        let spend_ammo = ask!("How much do you want to spend on ammunition? ", &mut stdout, &mut stdin.lock());
-        match supplies.buy_ammo(spend_ammo) {
+        match supplies.buy_ammo(ask!(ASK_AMMO_SPEND, &mut stdout, &mut stdin.lock())) {
             Ok(_) => { break; }
             Err(e) => println!("{}", e),
         }
     }
 
     loop {
-        let spend_clothes = ask!("How much do you want to spend on clothing? ", &mut stdout, &mut stdin.lock());
-        match supplies.buy_clothes(spend_clothes) {
+        match supplies.buy_clothes(ask!(ASK_CLOTHES_SPEND, &mut stdout, &mut stdin.lock())) {
             Ok(_) => { break; }
             Err(e) => println!("{}", e),
         }
     }
 
     loop {
-        let spend_misc = ask!("How much do you want to spend on miscellaneous supplies? ", &mut stdout, &mut stdin.lock());
-        match supplies.buy_misc(spend_misc) {
+        match supplies.buy_misc(ask!(ASK_MISC_SPEND, &mut stdout, &mut stdin.lock())) {
             Ok(_) => { break; }
             Err(e) => println!("{}", e),
         }
