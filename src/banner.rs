@@ -8,7 +8,7 @@ pub fn print_banner<W: Write>(out: &mut W) {
     out.flush().unwrap();
 }
 
-pub fn complete_trip<W: Write>(out: &mut W, supplies: Supplies) {
+pub fn complete_trip<W: Write>(out: &mut W, supplies: &mut Supplies) {
     let prefix = include_str!("../strings/complete_prefix.txt");
     let suffix = include_str!("../strings/complete_suffix.txt");
     let supplies_status = format!("Supplies left:\n{}\n", supplies);
@@ -33,13 +33,13 @@ fn test_banner() {
 
 #[test]
 fn test_complete_trip() {
-    let supplies = Supplies::new();
+    let mut supplies = Supplies::new();
     let prefix = include_str!("../strings/complete_prefix.txt");
     let suffix = include_str!("../strings/complete_suffix.txt");
     let trip_message = format!("{}Supplies left:\n{}\n{}", prefix, supplies, suffix);
     let mut c = Cursor::new(Vec::new());
 
-    complete_trip(&mut c, supplies);
+    complete_trip(&mut c, &mut supplies);
     c.seek(SeekFrom::Start(0)).unwrap();
     let mut trip_out = Vec::new();
     c.read_to_end(&mut trip_out).unwrap();

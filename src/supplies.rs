@@ -69,6 +69,10 @@ impl Supplies {
         self.food
     }
 
+    pub fn oxen_left(&mut self) -> u32 {
+        self.oxen
+    }
+
     pub fn buy_oxen(&mut self, spend: u32) -> Result<(), BuyError> {
         if spend > self.money {
             return Err(BuyError{ min_required: 200, max_allowed: 300, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
@@ -161,6 +165,13 @@ mod tests {
         let mut supplies = Supplies::new();
         supplies.buy_food(200).unwrap();
         assert_eq!(200, supplies.food_left());
+    }
+
+    #[test]
+    fn test_supplies_oxen_left() {
+        let mut supplies = Supplies::new();
+        supplies.buy_oxen(250).unwrap();
+        assert_eq!(250, supplies.oxen_left());
     }
 
     #[test]
@@ -287,7 +298,7 @@ mod tests {
         supplies.buy_clothes(30).unwrap();
         supplies.buy_misc(40).unwrap();
 
-        let supplies_display = format!("{}", supplies);
+        let supplies_display = format!("{}", &mut supplies);
         assert_eq!("\tFood\tAmmo\tClothes\tMisc\tMoney\n\t10\t20\t30\t40\t400\n", supplies_display);
     }
 }
