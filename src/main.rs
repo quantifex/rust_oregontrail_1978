@@ -25,12 +25,8 @@ fn main() {
 
     let mut supplies = Supplies::new();
     ask_ok!(supplies.buy_oxen(ask!(ASK_OXEN_SPEND, &mut stdout, &mut stdin.lock())));
-    ask_ok!(supplies.buy_food(ask!(ASK_FOOD_SPEND, &mut stdout, &mut stdin.lock())));
-    ask_ok!(supplies.buy_ammo(ask!(ASK_AMMO_SPEND, &mut stdout, &mut stdin.lock())));
-    ask_ok!(supplies.buy_clothes(ask!(ASK_CLOTHES_SPEND, &mut stdout, &mut stdin.lock())));
-    ask_ok!(supplies.buy_misc(ask!(ASK_MISC_SPEND, &mut stdout, &mut stdin.lock())));
+    supplies.buy(&mut stdout, &mut stdin.lock());
     supplies.set_premium(0.333);
-    println!("After all your purchases, you now have ${} left\n", supplies.money_left());
 
     let mut trip = Trip::new();
     let mut fort_available = false;
@@ -53,7 +49,7 @@ fn main() {
         else { action = ask_hunt_continue(&mut stdout, &mut stdin.lock()); }
         match action {
             TurnAction::Fort => {
-                visit_fort(&mut supplies, &mut stdout, &mut stdin.lock());
+                supplies.buy(&mut stdout, &mut stdin.lock());
                 fort_available = false;
                 trip.reverse(45);
             },
@@ -65,13 +61,6 @@ fn main() {
         trip.turn(200, supplies.oxen_left());
     }
 
-}
-
-fn visit_fort<W: Write, R: BufRead>(supplies: &mut Supplies, out: &mut W, input: &mut R) {
-    ask_ok!(supplies.buy_food(ask!(ASK_FOOD_SPEND, out, input)));
-    ask_ok!(supplies.buy_ammo(ask!(ASK_AMMO_SPEND, out, input)));
-    ask_ok!(supplies.buy_clothes(ask!(ASK_CLOTHES_SPEND, out, input)));
-    ask_ok!(supplies.buy_misc(ask!(ASK_MISC_SPEND, out, input)));
 }
 
 fn hunt<W: Write, R: BufRead>(supplies: &mut Supplies, out: &mut W, input: &mut R) {
