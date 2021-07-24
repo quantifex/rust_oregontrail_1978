@@ -73,6 +73,10 @@ impl Supplies {
         self.oxen
     }
 
+    pub fn ammo_left(&mut self) -> u32 {
+        self.ammo
+    }
+
     pub fn buy_oxen(&mut self, spend: u32) -> Result<(), BuyError> {
         if spend > self.money {
             return Err(BuyError{ min_required: 200, max_allowed: 300, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
@@ -172,6 +176,13 @@ mod tests {
         let mut supplies = Supplies::new();
         supplies.buy_oxen(250).unwrap();
         assert_eq!(250, supplies.oxen_left());
+    }
+
+    #[test]
+    fn test_supplies_ammo_left() {
+        let mut supplies = Supplies::new();
+        supplies.buy_ammo(150).unwrap();
+        assert_eq!(150, supplies.ammo_left());
     }
 
     #[test]

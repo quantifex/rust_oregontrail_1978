@@ -1,4 +1,13 @@
 use std::io::{Cursor, Write, BufRead, Seek, SeekFrom};
+use crate::marksman::*;
+
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum TurnAction {
+    Fort,
+    Hunt,
+    Continue,
+}
 
 #[macro_export]
 macro_rules! ask {
@@ -32,6 +41,42 @@ macro_rules! ask_ok {
     };
 }
 
+pub fn ask_marksman<W: Write, R: BufRead>(out: &mut W, input: &mut R) -> MarksmanQuality {
+    loop {
+        let marksman = MarksmanQuality::from_u32(ask!(include_str!("../strings/ask_marksman.txt"), out, input));
+        if marksman != MarksmanQuality::Unknown { return marksman; }
+    }
+}
+
+pub fn ask_continue<W: Write, R: BufRead>(out: &mut W, input: &mut R) -> TurnAction {
+    loop {
+        let action = ask!("Do you want to 1) Continue ? ", out, input);
+        if action == 1 { return TurnAction::Continue; }
+    }
+}
+
+pub fn ask_hunt_continue<W: Write, R: BufRead>(out: &mut W, input: &mut R) -> TurnAction {
+    loop {
+        let action = ask!("Do you want to 1) Hunt or 2) Continue ? ", out, input);
+        match action {
+            1 => return TurnAction::Hunt,
+            2 => return TurnAction::Continue,
+            _ => continue,
+        }
+    }
+}
+
+pub fn ask_fort_hunt_continue<W: Write, R: BufRead>(out: &mut W, input: &mut R) -> TurnAction {
+    loop {
+        let action = ask!("Do you want to 1) Stop at a Fort, 2) Hunt or 3) Continue ? ", out, input);
+        match action {
+            1 => return TurnAction::Fort,
+            2 => return TurnAction::Hunt,
+            3 => return TurnAction::Continue,
+            _ => continue,
+        }
+    }
+}
 
 #[test]
 fn test_ask_value_1() {
@@ -77,4 +122,74 @@ fn test_ask_ok_success() {
     // Assert
     ask_ok!(func());
     assert!(okay_result);
+}
+
+#[test]
+fn test_ask_marksman() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"1").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let action = ask_marksman(&mut cout, &mut cin);
+    assert_eq!(MarksmanQuality::Ace, action);
+}
+
+#[test]
+fn test_ask_continue() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"1").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let action = ask_continue(&mut cout, &mut cin);
+    assert_eq!(TurnAction::Continue, action);
+}
+
+#[test]
+fn test_ask_hunt_continue_hunt() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"1").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let action = ask_hunt_continue(&mut cout, &mut cin);
+    assert_eq!(TurnAction::Hunt, action);
+}
+
+#[test]
+fn test_ask_hunt_continue_continue() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"2").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let action = ask_hunt_continue(&mut cout, &mut cin);
+    assert_eq!(TurnAction::Continue, action);
+}
+
+#[test]
+fn test_ask_fort_hunt_continue_fort() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"1").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let action = ask_fort_hunt_continue(&mut cout, &mut cin);
+    assert_eq!(TurnAction::Fort, action);
+}
+
+#[test]
+fn test_ask_fort_hunt_continue_hunt() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"2").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let action = ask_fort_hunt_continue(&mut cout, &mut cin);
+    assert_eq!(TurnAction::Hunt, action);
+}
+
+#[test]
+fn test_ask_fort_hunt_continue_continue() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"3").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let action = ask_fort_hunt_continue(&mut cout, &mut cin);
+    assert_eq!(TurnAction::Continue, action);
 }
