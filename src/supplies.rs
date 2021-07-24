@@ -7,7 +7,8 @@ pub struct Supplies {
     food: u32,
     ammo: u32,
     clothes: u32,
-    misc: u32
+    misc: u32,
+    cost_premium: f32,
 }
 
 #[derive(PartialEq)]
@@ -57,24 +58,37 @@ impl Supplies {
             food: 0,
             ammo: 0,
             clothes: 0,
-            misc: 0
+            misc: 0,
+            cost_premium: 0.0,
         }
+    }
+
+    pub fn set_premium(&mut self, premium: f32) {
+        self.cost_premium = premium;
     }
 
     pub fn money_left(&mut self) -> u32 {
         self.money
     }
 
-    pub fn food_left(&mut self) -> u32 {
-        self.food
-    }
-
     pub fn oxen_left(&mut self) -> u32 {
         self.oxen
     }
 
+    pub fn food_left(&mut self) -> u32 {
+        self.food
+    }
+
     pub fn ammo_left(&mut self) -> u32 {
         self.ammo
+    }
+
+    pub fn clothes_left(&mut self) -> u32 {
+        self.clothes
+    }
+
+    pub fn misc_left(&mut self) -> u32 {
+        self.misc
     }
 
     pub fn buy_oxen(&mut self, spend: u32) -> Result<(), BuyError> {
@@ -94,7 +108,7 @@ impl Supplies {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
         }
-        self.food = spend;
+        self.food = (spend as f32 * (1.0 - self.cost_premium)) as u32;
         self.money -= spend;
         Ok(())    
     }
@@ -103,7 +117,7 @@ impl Supplies {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
         }
-        self.ammo = spend;
+        self.ammo = (spend as f32 * (1.0 - self.cost_premium)) as u32;
         self.money -= spend;
         Ok(())    
     }
@@ -112,7 +126,7 @@ impl Supplies {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
         }
-        self.clothes = spend;
+        self.clothes = (spend as f32 * (1.0 - self.cost_premium)) as u32;
         self.money -= spend;
         Ok(())    
     }
@@ -121,7 +135,7 @@ impl Supplies {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
         }
-        self.misc = spend;
+        self.misc = (spend as f32 * (1.0 - self.cost_premium)) as u32;
         self.money -= spend;
         Ok(())    
     }
@@ -165,13 +179,6 @@ mod tests {
     }
 
     #[test]
-    fn test_supplies_food_left() {
-        let mut supplies = Supplies::new();
-        supplies.buy_food(200).unwrap();
-        assert_eq!(200, supplies.food_left());
-    }
-
-    #[test]
     fn test_supplies_oxen_left() {
         let mut supplies = Supplies::new();
         supplies.buy_oxen(250).unwrap();
@@ -179,10 +186,31 @@ mod tests {
     }
 
     #[test]
+    fn test_supplies_food_left() {
+        let mut supplies = Supplies::new();
+        supplies.buy_food(200).unwrap();
+        assert_eq!(200, supplies.food_left());
+    }
+
+    #[test]
     fn test_supplies_ammo_left() {
         let mut supplies = Supplies::new();
         supplies.buy_ammo(150).unwrap();
         assert_eq!(150, supplies.ammo_left());
+    }
+
+    #[test]
+    fn test_supplies_clothes_left() {
+        let mut supplies = Supplies::new();
+        supplies.buy_clothes(200).unwrap();
+        assert_eq!(200, supplies.clothes_left());
+    }
+
+    #[test]
+    fn test_supplies_misc_left() {
+        let mut supplies = Supplies::new();
+        supplies.buy_misc(200).unwrap();
+        assert_eq!(200, supplies.misc_left());
     }
 
     #[test]
@@ -298,6 +326,42 @@ mod tests {
         assert_eq!(BuyErrorType::InsufficientFunds, reason);
         assert_eq!(700, supplies.money);
         assert_eq!(0, supplies.misc);
+    }   
+
+    #[test]
+    fn test_supplies_set_premium_food() {
+        let mut supplies = Supplies::new();
+        supplies.set_premium(0.3);
+        supplies.buy_food(200).unwrap();
+        assert_eq!(140, supplies.food_left());
+        assert_eq!(500, supplies.money_left());
+    }
+
+    #[test]
+    fn test_supplies_set_premium_ammo() {
+        let mut supplies = Supplies::new();
+        supplies.set_premium(0.3);
+        supplies.buy_ammo(200).unwrap();
+        assert_eq!(140, supplies.ammo_left());
+        assert_eq!(500, supplies.money_left());
+    }
+
+    #[test]
+    fn test_supplies_set_premium_clothes() {
+        let mut supplies = Supplies::new();
+        supplies.set_premium(0.3);
+        supplies.buy_clothes(200).unwrap();
+        assert_eq!(140, supplies.clothes_left());
+        assert_eq!(500, supplies.money_left());
+    }
+
+    #[test]
+    fn test_supplies_set_premium_misc() {
+        let mut supplies = Supplies::new();
+        supplies.set_premium(0.3);
+        supplies.buy_misc(200).unwrap();
+        assert_eq!(140, supplies.misc_left());
+        assert_eq!(500, supplies.money_left());
     }
 
     #[test]

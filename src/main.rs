@@ -21,7 +21,7 @@ fn main() {
     let stdin = stdin();
     print_banner(&mut stdout);
 
-    let marksman = ask_marksman(&mut stdout, &mut stdin.lock());
+    let _marksman = ask_marksman(&mut stdout, &mut stdin.lock());
 
     let mut supplies = Supplies::new();
     ask_ok!(supplies.buy_oxen(ask!(ASK_OXEN_SPEND, &mut stdout, &mut stdin.lock())));
@@ -29,6 +29,7 @@ fn main() {
     ask_ok!(supplies.buy_ammo(ask!(ASK_AMMO_SPEND, &mut stdout, &mut stdin.lock())));
     ask_ok!(supplies.buy_clothes(ask!(ASK_CLOTHES_SPEND, &mut stdout, &mut stdin.lock())));
     ask_ok!(supplies.buy_misc(ask!(ASK_MISC_SPEND, &mut stdout, &mut stdin.lock())));
+    supplies.set_premium(0.333);
     println!("After all your purchases, you now have ${} left\n", supplies.money_left());
 
     let mut trip = Trip::new();
@@ -47,15 +48,32 @@ fn main() {
             trip.miles_traveled(), trip.current_date().format("%A %d-%b-%Y"), supplies);
 
         // Prompt for an action
-        match ask_continue(&mut stdout, &mut stdin.lock()) {
-            TurnAction::Continue => {
-                fort_available = true;
+        let action;
+        if fort_available { action = ask_fort_hunt_continue(&mut stdout, &mut stdin.lock()) }
+        else { action = ask_hunt_continue(&mut stdout, &mut stdin.lock()); }
+        match action {
+            TurnAction::Fort => {
+                visit_fort(&mut supplies, &mut stdout, &mut stdin.lock());
+                fort_available = false;
+                trip.reverse(45);
             },
-            _ => {}
+            TurnAction::Hunt => hunt(&mut supplies, &mut stdout, &mut stdin.lock()),
+            TurnAction::Continue => fort_available = true,
         }
 
         if supplies.ammo_left() > 39 { fort_available = true; }
         trip.turn(200, supplies.oxen_left());
     }
+
+}
+
+fn visit_fort<W: Write, R: BufRead>(supplies: &mut Supplies, out: &mut W, input: &mut R) {
+    ask_ok!(supplies.buy_food(ask!(ASK_FOOD_SPEND, out, input)));
+    ask_ok!(supplies.buy_ammo(ask!(ASK_AMMO_SPEND, out, input)));
+    ask_ok!(supplies.buy_clothes(ask!(ASK_CLOTHES_SPEND, out, input)));
+    ask_ok!(supplies.buy_misc(ask!(ASK_MISC_SPEND, out, input)));
+}
+
+fn hunt<W: Write, R: BufRead>(supplies: &mut Supplies, out: &mut W, input: &mut R) {
 
 }
