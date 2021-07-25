@@ -4,6 +4,12 @@ use std::error::Error;
 use std::result::Result;
 use crate::*;
 
+const ASK_FOOD_SPEND: &str = "How much do you want to spend on \x1B[36mFood\x1B[0m? ";
+const ASK_AMMO_SPEND: &str = "How much do you want to spend on \x1B[35mAmmunition\x1B[0m? ";
+const ASK_CLOTHES_SPEND: &str = "How much do you want to spend on \x1B[34mClothing\x1B[0m? ";
+const ASK_MISC_SPEND: &str = "How much do you want to spend on \x1B[33mMiscellaneous supplies\x1B[0m? ";
+macro_rules! SUPPLIES_BUY_LEFT { () => { "After all your purchases, you now have $\x1B[32m{}\x1B[0m left\n" }; }
+
 pub struct Supplies {
     money: u32,
     oxen: u32,
@@ -48,7 +54,9 @@ impl fmt::Display for BuyError {
 
 impl fmt::Display for Supplies {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "\tFood\tAmmo\tClothes\tMisc\tMoney\n\t{}\t{}\t{}\t{}\t{}\n",
+        write!(f, "\t{}\t{}\t{}\t{}\t{}\n\t{}\t{}\t{}\t{}\t{}\n",
+            "\x1B[36mFood\x1B[0m", "\x1B[35mAmmo\x1B[0m", "\x1B[34mClothes\x1B[0m",
+            "\x1B[33mMisc\x1B[0m", "\x1B[32mMoney\x1B[0m",
             self.food, self.ammo, self.clothes, self.misc, self.money)
     }
 }
@@ -148,7 +156,7 @@ impl Supplies {
         ask_ok!(self.buy_ammo(ask!(ASK_AMMO_SPEND, out, input)));
         ask_ok!(self.buy_clothes(ask!(ASK_CLOTHES_SPEND, out, input)));
         ask_ok!(self.buy_misc(ask!(ASK_MISC_SPEND, out, input)));
-        println!("After all your purchases, you now have ${} left\n", self.money_left());
+        out.write(format!(SUPPLIES_BUY_LEFT!(), self.money_left()).as_bytes()).unwrap();
     }
 }
 
@@ -425,7 +433,7 @@ mod tests {
         supplies.buy_misc(40).unwrap();
 
         let supplies_display = format!("{}", &mut supplies);
-        assert_eq!("\tFood\tAmmo\tClothes\tMisc\tMoney\n\t10\t20\t30\t40\t400\n", supplies_display);
+        assert_eq!("\t\x1B[36mFood\x1B[0m\t\x1B[35mAmmo\x1B[0m\t\x1B[34mClothes\x1B[0m\t\x1B[33mMisc\x1B[0m\t\x1B[32mMoney\x1B[0m\n\t10\t20\t30\t40\t400\n", supplies_display);
     }
 
     #[test]

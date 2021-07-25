@@ -12,11 +12,7 @@ mod supplies;
 mod trip;
 mod finish;
 
-const ASK_OXEN_SPEND: &str = "How much do you want to spend on your oxen team? ";
-const ASK_FOOD_SPEND: &str = "How much do you want to spend on food? ";
-const ASK_AMMO_SPEND: &str = "How much do you want to spend on ammunition? ";
-const ASK_CLOTHES_SPEND: &str = "How much do you want to spend on clothing? ";
-const ASK_MISC_SPEND: &str = "How much do you want to spend on miscellaneous supplies? ";
+const ASK_OXEN_SPEND: &str = "How much do you want to spend on your \x1B[31mOxen team\x1B[0m? ";
 
 fn main() {
     let mut stdout = stdout();
@@ -65,6 +61,7 @@ fn main() {
 
         // After turn actions are complete, see if we can survive
         if supplies.food_left() <= 14 {
+            println!("\n=================================================================");
             println!("You ran out of food and starved to death.");
             handle_death(&mut stdout, &mut stdin.lock());
             std::process::exit(0);

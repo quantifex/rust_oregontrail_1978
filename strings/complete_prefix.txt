@@ -1,3 +1,5 @@
-You finally arrived in Oregon City
-After 2040 long miles --- Horray!!!!!
+You finally arrived in [37;4;1mOregon City[0m after [37;4;1m2040[0m long miles
+
+Horray!!!!!
 A Real Pioneer!
+

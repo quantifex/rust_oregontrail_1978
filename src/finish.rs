@@ -6,8 +6,8 @@ const ASK_FINISH_MINISTER: &str = "Would you like a minister (y/n)? ";
 const ASK_FINISH_FUNERAL: &str = "Would you like a fancy funeral (y/n)? ";
 const ASK_FINISH_NOTIFY_KIN: &str = "Would you like to inform your next of kin (y/n)? ";
 
-const NOTIFY_TELEGRAPH_CHARGE: &str = "That will be $4.50 for the telegraph charge.\n\n";
-const NOTIFY_SADIE_WORRIED: &str = "Your Aunt Sadie in St. Louis is really worried about you...\n\n";
+const NOTIFY_TELEGRAPH_CHARGE: &str = "\nThat will be $4.50 for the telegraph charge.\n\n";
+const NOTIFY_SADIE_WORRIED: &str = "\nYour Aunt Sadie in St. Louis is really worried about you...\n\n";
 
 pub fn complete_trip<W: Write>(out: &mut W, supplies: &mut Supplies) {
     let prefix = include_str!("../strings/complete_prefix.txt");
