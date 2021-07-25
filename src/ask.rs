@@ -38,6 +38,8 @@ macro_rules! ask_yn {
             let mut buffer = String::new();
             $input.read_line(&mut buffer).unwrap();
             buffer.retain(|buffer| !buffer.is_whitespace());
+
+            buffer.push('y');
             match buffer.chars().next().unwrap() {
                 'n' => false,
                 _ => true,
@@ -158,6 +160,17 @@ fn test_ask_yn_value_test() {
     let mut cout = Cursor::new(Vec::new());
     let mut cin = Cursor::new(Vec::new());
     cin.write(b"test").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    // Assert
+    let value = ask_yn!("test? ", cout, cin);
+    assert_eq!(true, value);
+}
+
+#[test]
+fn test_ask_yn_value_invalid() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b" ").unwrap();
     cin.seek(SeekFrom::Start(0)).unwrap();
     // Assert
     let value = ask_yn!("test? ", cout, cin);

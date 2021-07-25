@@ -61,6 +61,7 @@ fn main() {
 
         // After turn actions are complete, see if we can survive
         if supplies.food_left() <= 14 {
+            println!("\n=================================================================");
             println!("You ran out of food and starved to death.");
             handle_death(&mut stdout, &mut stdin.lock());
             std::process::exit(0);
