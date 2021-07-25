@@ -1,14 +1,16 @@
-#!/bin/bash
+#!/bin/bash -e
 
 rm -rf coverage
+rm default.profraw
 
 export RUSTFLAGS="-Zinstrument-coverage"
+export CARGO_INCREMENTAL=0
 cargo +nightly test
-# Print Code Coverage to the console
-echo -n "Total Coverage %: "
-grcov . --binary-path target/debug -s . --ignore="/*" -t covdir --ignore-not-existing | jq '.coveragePercent'
-echo
-# Generate Code Coverage web report
-grcov . --binary-path target/debug -s . --ignore="/*" -t html --branch --ignore-not-existing -o ./coverage/
-# Generate Code Coverage for codecov badge
+
+# Generate Code Coverage (in lcov for lcov and codecov usage)
+mkdir -p ./coverage
 grcov . --binary-path target/debug -s . --ignore="/*" -t lcov --branch --ignore-not-existing -o ./coverage/lcov.info
+
+if [ $(command -v genhtml) ]; then
+    genhtml ./coverage/lcov.info --output-directory coverage
+fi

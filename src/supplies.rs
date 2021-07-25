@@ -4,6 +4,8 @@ use std::error::Error;
 use std::result::Result;
 use crate::*;
 
+macro_rules! SUPPLIES_BUY_LEFT { () => { "After all your purchases, you now have $\x1B[32m{}\x1B[0m left\n" }; }
+
 pub struct Supplies {
     money: u32,
     oxen: u32,
@@ -148,7 +150,7 @@ impl Supplies {
         ask_ok!(self.buy_ammo(ask!(ASK_AMMO_SPEND, out, input)));
         ask_ok!(self.buy_clothes(ask!(ASK_CLOTHES_SPEND, out, input)));
         ask_ok!(self.buy_misc(ask!(ASK_MISC_SPEND, out, input)));
-        println!("After all your purchases, you now have ${} left\n", self.money_left());
+        out.write(format!(SUPPLIES_BUY_LEFT!(), self.money_left()).as_bytes()).unwrap();
     }
 }
 
