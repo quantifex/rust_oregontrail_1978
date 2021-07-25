@@ -17,7 +17,7 @@ graph TD
     Turn ---->|Traveled > 40 Weeks| Death[You have died];
 
     Turn -->|Need Food| Hunt[Hunt];
-    Turn -->|Stop at a Fort| Fort[Fort];
+    Turn -->|Stop at a Fort| Fort[Fort<br>Buy Supplies<br>Buying 33% more expensive];
     Turn --> E[Eat];
     E -->|Travel| R[Riders Ahead];
     R --> Turn;

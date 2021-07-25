@@ -9,6 +9,9 @@ pub struct Trip {
 }
 
 impl Trip {
+    /// Constructor
+    ///     Miles Traveled will be initialized to 0
+    ///     Current Date will be initialized to March 29, 1847
     pub fn new() -> Trip {
         Trip {
             miles_traveled: 0,
@@ -17,24 +20,35 @@ impl Trip {
         }
     }
 
+    /// Retrieve the # of miles traveled so far
     pub fn miles_traveled(&mut self) -> u32 {
         self.miles_traveled
     }
 
+    /// Retrieve the current date of travel
     pub fn current_date(&mut self) -> NaiveDate {
         self.current_date
     }
 
+    /// Travel the Oregon Trail by a specific number of miles
     pub fn travel(&mut self, miles: u32) {
         self.miles_traveled += miles;
     }
 
-    pub fn turn(&mut self, miles: u32, oxen: u32) {
-        let turn_miles = miles + ((oxen - 220) / (5 + self.rng.gen_range(0..10)));
+    /// Completes a portion of the Oregon Trail Trip, a "turn" of the game
+    ///     This includes traveling X miles and the passing of 2 weeks
+    ///     Where X miles equals a distance calculated as (BASIC code):
+    ///         200+((oxen)-220)/5+10*RND()
+    ///     Based on this calculation, the amount spent on oxen has the biggest impact:
+    ///         If Oxen = 200, Mileage: 197 <==> 199
+    ///         If Oxen = 300, Mileage: 213 <==> 206
+    pub fn turn(&mut self, oxen: u32) {
+        let turn_miles = 200 + ((oxen - 220) / (5 + self.rng.gen_range(0..10)));
         self.miles_traveled += turn_miles;
         self.current_date += Duration::days(14);
     }
 
+    /// Something bad happened, we need to go backwards or delay the trip by a specific number of miles
     pub fn reverse(&mut self, miles: u32) {
         self.miles_traveled -= miles;
     }
@@ -69,7 +83,7 @@ mod tests {
     #[test]
     fn test_trip_turn() {
         let mut trip = Trip::new();
-        trip.turn(200, 300);
+        trip.turn(300);
         assert!(trip.miles_traveled() > 200);
         assert!(trip.miles_traveled() < 300);
     }

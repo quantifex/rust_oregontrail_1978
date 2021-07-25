@@ -3,12 +3,14 @@ use crate::banner::*;
 use crate::ask::*;
 use crate::supplies::*;
 use crate::trip::*;
+use crate::finish::*;
 
 mod banner;
 mod ask;
 mod marksman;
 mod supplies;
 mod trip;
+mod finish;
 
 const ASK_OXEN_SPEND: &str = "How much do you want to spend on your oxen team? ";
 const ASK_FOOD_SPEND: &str = "How much do you want to spend on food? ";
@@ -53,12 +55,26 @@ fn main() {
                 fort_available = false;
                 trip.reverse(45);
             },
-            TurnAction::Hunt => hunt(&mut supplies, &mut stdout, &mut stdin.lock()),
-            TurnAction::Continue => fort_available = true,
+            TurnAction::Hunt => {
+                hunt(&mut supplies, &mut stdout, &mut stdin.lock())
+            },
+            TurnAction::Continue => {
+                fort_available = true
+            },
         }
 
+        // After turn actions are complete, see if we can survive
+        if supplies.food_left() <= 14 {
+            println!("You ran out of food and starved to death.");
+            handle_death(&mut stdout, &mut stdin.lock());
+            std::process::exit(0);
+        }
+
+        // Determine if a fort will be available
         if supplies.ammo_left() > 39 { fort_available = true; }
-        trip.turn(200, supplies.oxen_left());
+
+        // Travel along the Oregon Trail
+        trip.turn(supplies.oxen_left());
     }
 
 }
