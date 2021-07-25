@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 rm -rf coverage
-rm default.profraw
+rm -f default.profraw
 
 export RUSTFLAGS="-Zinstrument-coverage"
 export CARGO_INCREMENTAL=0
