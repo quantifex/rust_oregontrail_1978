@@ -4,6 +4,10 @@ use std::error::Error;
 use std::result::Result;
 use crate::*;
 
+const ASK_FOOD_SPEND: &str = "How much do you want to spend on \x1B[36mFood\x1B[0m? ";
+const ASK_AMMO_SPEND: &str = "How much do you want to spend on \x1B[35mAmmunition\x1B[0m? ";
+const ASK_CLOTHES_SPEND: &str = "How much do you want to spend on \x1B[34mClothing\x1B[0m? ";
+const ASK_MISC_SPEND: &str = "How much do you want to spend on \x1B[33mMiscellaneous supplies\x1B[0m? ";
 macro_rules! SUPPLIES_BUY_LEFT { () => { "After all your purchases, you now have $\x1B[32m{}\x1B[0m left\n" }; }
 
 pub struct Supplies {
