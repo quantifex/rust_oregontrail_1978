@@ -9,6 +9,6 @@ echo -n "Total Coverage %: "
 grcov . --binary-path target/debug -s . --ignore="/*" -t covdir --ignore-not-existing | jq '.coveragePercent'
 echo
 # Generate Code Coverage web report
-grcov . --binary-path target/debug -s . -t html --branch --ignore-not-existing -o ./coverage/
+grcov . --binary-path target/debug -s . --ignore="/*" -t html --branch --ignore-not-existing -o ./coverage/
 # Generate Code Coverage for codecov badge
-grcov . --binary-path target/debug -s . -t lcov --branch --ignore-not-existing -o ./coverage/lcov.info
+grcov . --binary-path target/debug -s . --ignore="/*" -t lcov --branch --ignore-not-existing -o ./coverage/lcov.info
