@@ -38,6 +38,17 @@ fn main() {
         if supplies.food_left() <= 12 {
             println!("You'd better do some hunting or buy some food, and soon!!!!");
         }
+        if trip.need_healing() {
+            if supplies.money_left() < 20 {
+                println!("You can't afford a doctor and died from your injuries.");
+                handle_death(&mut stdout, &mut stdin.lock());
+                std::process::exit(0);
+            } else {
+                println!("Doctor's bill is $20 to heal your injuries.");
+                supplies.spend(20);
+                trip.visit_doctor(&mut supplies);
+            }
+        }
         println!("Total mileage traveled: {}\nIt is now {}\nSupplies remaining:\n{}", 
             trip.miles_traveled(), trip.current_date().format("%A %d-%b-%Y"), supplies);
 

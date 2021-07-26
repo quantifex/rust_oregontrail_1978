@@ -82,6 +82,14 @@ impl Supplies {
         self.money
     }
 
+    pub fn spend(&mut self, spend: u32) -> Result<(), BuyError> {
+        if spend > self.money {
+            return Err(BuyError{ min_required: 20, max_allowed: 20, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
+        }
+        self.money -= spend;
+        Ok(())
+    }
+
     pub fn oxen_left(&mut self) -> u32 {
         self.oxen
     }

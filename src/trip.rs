@@ -1,10 +1,13 @@
 use rand::Rng;
 use rand::rngs::ThreadRng;
 use chrono::{NaiveDate, Duration};
+use crate::*;
 
 pub struct Trip {
     miles_traveled: u32,
     current_date: NaiveDate,
+    need_healing: bool,
+    health_issue: String,
     rng: ThreadRng,
 }
 
@@ -16,6 +19,8 @@ impl Trip {
         Trip {
             miles_traveled: 0,
             current_date: NaiveDate::from_ymd(1847, 03, 29),
+            need_healing: false,
+            health_issue: String::new(),
             rng: rand::thread_rng(),
         }
     }
@@ -33,6 +38,21 @@ impl Trip {
     /// Travel the Oregon Trail by a specific number of miles
     pub fn travel(&mut self, miles: u32) {
         self.miles_traveled += miles;
+    }
+
+    /// Retrieve the current need_healing flag
+    pub fn need_healing(&mut self) -> bool {
+        self.need_healing
+    }
+
+    /// Retrieve the string which describes your current health issue
+    pub fn health_issue(&mut self) -> &str {
+        &self.health_issue
+    }
+
+    pub fn visit_doctor(&mut self, supplies: &mut supplies::Supplies) {
+        supplies.spend(20);
+        self.need_healing = false;
     }
 
     /// Completes a portion of the Oregon Trail Trip, a "turn" of the game
@@ -63,6 +83,8 @@ mod tests {
         let mut trip = Trip::new();
         assert_eq!(0, trip.miles_traveled());
         assert_eq!(NaiveDate::from_ymd(1847, 03, 29), trip.current_date());
+        assert_eq!(false, trip.need_healing());
+        assert_eq!("", trip.health_issue());
     }
 
     #[test]
