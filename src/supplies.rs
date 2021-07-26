@@ -206,10 +206,19 @@ mod tests {
     }
 
     #[test]
-    fn test_supplies_spend() {
+    fn test_supplies_spend_success() {
         let mut supplies = Supplies::new();
         supplies.spend(200).unwrap();
         assert_eq!(500, supplies.money_left());
+    }
+
+    #[test]
+    fn test_supplies_spend_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.spend(1000).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::InsufficientFunds, reason);
+        assert_eq!(700, supplies.money);
     }
 
     #[test]

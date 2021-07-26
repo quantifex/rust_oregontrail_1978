@@ -123,6 +123,13 @@ mod tests {
     }
 
     #[test]
+    fn test_got_sick() {
+        let mut trip = Trip::new();
+        trip.got_sick();
+        assert_eq!("your illness", trip.health_issue());
+    }
+
+    #[test]
     fn test_visit_doctor() {
         let mut trip = Trip::new();
         trip.got_sick();
