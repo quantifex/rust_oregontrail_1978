@@ -3,6 +3,8 @@ use rand::rngs::ThreadRng;
 use chrono::{NaiveDate, Duration};
 use crate::*;
 
+const HEALTH_ILLNESS: &str = "illness";
+
 pub struct Trip {
     miles_traveled: u32,
     current_date: NaiveDate,
@@ -40,14 +42,24 @@ impl Trip {
         self.miles_traveled += miles;
     }
 
+    pub fn got_sick(&mut self) {
+        self.need_healing = true;
+        self.health_issue.clear();
+        self.health_issue.push_str(HEALTH_ILLNESS);
+    }
+
     /// Retrieve the current need_healing flag
     pub fn need_healing(&mut self) -> bool {
         self.need_healing
     }
 
     /// Retrieve the string which describes your current health issue
-    pub fn health_issue(&mut self) -> &str {
-        &self.health_issue
+    pub fn health_issue(&mut self) -> String {
+        if self.health_issue.is_empty() {
+            String::new()
+        } else {
+            format!("your {}", self.health_issue.as_str())
+        }
     }
 
     pub fn visit_doctor(&mut self, supplies: &mut supplies::Supplies) {
@@ -108,5 +120,15 @@ mod tests {
         trip.turn(300);
         assert!(trip.miles_traveled() > 200);
         assert!(trip.miles_traveled() < 300);
+    }
+
+    #[test]
+    fn test_visit_doctor() {
+        let mut trip = Trip::new();
+        trip.got_sick();
+        let mut supplies = Supplies::new();
+        trip.visit_doctor(&mut supplies);
+        assert_eq!(680, supplies.money_left());
+        assert_eq!(false, trip.need_healing());
     }
 }

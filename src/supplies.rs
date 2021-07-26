@@ -206,6 +206,13 @@ mod tests {
     }
 
     #[test]
+    fn test_supplies_spend() {
+        let mut supplies = Supplies::new();
+        supplies.spend(200).unwrap();
+        assert_eq!(500, supplies.money_left());
+    }
+
+    #[test]
     fn test_supplies_oxen_left() {
         let mut supplies = Supplies::new();
         supplies.buy_oxen(250).unwrap();
