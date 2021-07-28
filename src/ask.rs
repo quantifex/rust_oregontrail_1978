@@ -1,5 +1,6 @@
 use std::io::{Cursor, Write, BufRead, Seek, SeekFrom};
 use crate::marksman::*;
+use crate::meal::*;
 
 #[derive(PartialEq)]
 #[derive(Debug)]
@@ -66,6 +67,13 @@ pub fn ask_marksman<W: Write, R: BufRead>(out: &mut W, input: &mut R) -> Marksma
     loop {
         let marksman = MarksmanQuality::from_u32(ask!(include_str!("../strings/ask_marksman.txt"), out, input));
         if marksman != MarksmanQuality::Unknown { return marksman; }
+    }
+}
+
+pub fn ask_meal<W: Write, R: BufRead>(out: &mut W, input: &mut R) -> MealChoice {
+    loop {
+        let meal = MealChoice::from_u32(ask!("Do you want to eat: 1) Poorly, 2) Moderately, or 3) Well", out, input));
+        if meal != MealChoice::Unknown { return meal; }
     }
 }
 
@@ -197,6 +205,16 @@ fn test_ask_marksman() {
     cin.seek(SeekFrom::Start(0)).unwrap();
     let action = ask_marksman(&mut cout, &mut cin);
     assert_eq!(MarksmanQuality::Ace, action);
+}
+
+#[test]
+fn test_ask_meal() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"3").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let meal = ask_meal(&mut cout, &mut cin);
+    assert_eq!(MealChoice::Well, meal);
 }
 
 #[test]

@@ -3,11 +3,13 @@ use crate::banner::*;
 use crate::ask::*;
 use crate::supplies::*;
 use crate::trip::*;
+use crate::meal::*;
 use crate::finish::*;
 
 mod banner;
 mod ask;
 mod marksman;
+mod meal;
 mod supplies;
 mod trip;
 mod finish;
@@ -17,6 +19,8 @@ const ASK_OXEN_SPEND: &str = "How much do you want to spend on your \x1B[31mOxen
 fn main() {
     let mut stdout = stdout();
     let stdin = stdin();
+    let mut supplies = Supplies::new();
+    let mut trip = Trip::new();
     print_banner(&mut stdout);
 
     let _marksman = ask_marksman(&mut stdout, &mut stdin.lock());
@@ -26,7 +30,6 @@ fn main() {
     supplies.buy(&mut stdout, &mut stdin.lock());
     supplies.set_premium(0.333);
 
-    let mut trip = Trip::new();
     let mut fort_available = false;
     loop {
         println!("\n=================================================================");
@@ -34,9 +37,22 @@ fn main() {
             complete_trip(&mut stdout, &mut supplies);
             std::process::exit(0);
         }
+        // Travel along the Oregon Trail
+        trip.turn(supplies.oxen_left());
 
-        if supplies.food_left() <= 12 {
+        if supplies.food_left() <= 14 {
             println!("You'd better do some hunting or buy some food, and soon!!!!");
+        }
+        if trip.need_doctor() {
+            if supplies.money_left() < 20 {
+                println!("You can't afford a doctor and died from your injuries.");
+                handle_death(&mut stdout, &mut stdin.lock());
+                std::process::exit(0);
+            } else {
+                println!("Doctor's bill is $20 to heal your injuries.");
+                supplies.spend(20);
+                trip.visit_doctor(&mut supplies);
+            }
         }
         println!("Total mileage traveled: {}\nIt is now {}\nSupplies remaining:\n{}", 
             trip.miles_traveled(), trip.current_date().format("%A %d-%b-%Y"), supplies);
@@ -65,13 +81,12 @@ fn main() {
             println!("You ran out of food and starved to death.");
             handle_death(&mut stdout, &mut stdin.lock());
             std::process::exit(0);
+        } else {    // Time to eat
+            ask_ok!(supplies.use_food(MealChoice::to_food(ask_meal(&mut stdout, &mut stdin.lock()))));
         }
 
         // Determine if a fort will be available
         if supplies.ammo_left() > 39 { fort_available = true; }
-
-        // Travel along the Oregon Trail
-        trip.turn(supplies.oxen_left());
     }
 
 }

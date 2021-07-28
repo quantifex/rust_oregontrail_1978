@@ -52,6 +52,32 @@ impl fmt::Display for BuyError {
     }
 }
 
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum UseErrorType {
+    InsufficientSupplies,
+}
+
+#[derive(Debug)]
+pub struct UseError {
+    requested: u32,
+    available: u32,
+    min_required: u32,
+    max_allowed: u32,
+    reason: UseErrorType,
+}
+
+impl Error for UseError {}
+
+impl fmt::Display for UseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.reason {
+            UseErrorType::InsufficientSupplies =>
+                write!(f, "\tUnable to use ${}, you only have ${} available.", self.requested, self.available),
+        }
+    }
+}
+
 impl fmt::Display for Supplies {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\t{}\t{}\t{}\t{}\t{}\n\t{}\t{}\t{}\t{}\t{}\n",
@@ -80,6 +106,14 @@ impl Supplies {
 
     pub fn money_left(&mut self) -> u32 {
         self.money
+    }
+
+    pub fn spend(&mut self, spend: u32) -> Result<(), BuyError> {
+        if spend > self.money {
+            return Err(BuyError{ min_required: 20, max_allowed: 20, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
+        }
+        self.money -= spend;
+        Ok(())
     }
 
     pub fn oxen_left(&mut self) -> u32 {
@@ -124,6 +158,14 @@ impl Supplies {
         Ok(())    
     }
 
+    pub fn use_food(&mut self, food: u32) -> Result<(), UseError> {
+        if food > self.food {
+            return Err(UseError{ min_required: 0, max_allowed: self.food, requested: food, available: self.food, reason: UseErrorType::InsufficientSupplies });
+        }
+        self.food -= food;
+        Ok(())
+    }
+
     pub fn buy_ammo(&mut self, spend: u32) -> Result<(), BuyError> {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });
@@ -149,6 +191,14 @@ impl Supplies {
         self.misc += (spend as f32 * (1.0 - self.cost_premium)) as u32;
         self.money -= spend;
         Ok(())    
+    }
+
+    pub fn use_misc(&mut self, misc: u32) -> Result<(), UseError> {
+        if misc > self.misc {
+            return Err(UseError{ min_required: 0, max_allowed: self.misc, requested: misc, available: self.misc, reason: UseErrorType::InsufficientSupplies });
+        }
+        self.misc -= misc;
+        Ok(())
     }
 
     pub fn buy<W: Write, R: BufRead>(&mut self, out: &mut W, input: &mut R) {
@@ -183,6 +233,12 @@ mod tests {
     }
 
     #[test]
+    fn test_useerror_insufficient() {
+        let use_error = UseError{ min_required: 0, max_allowed: 0, requested: 0, available: 0, reason: UseErrorType::InsufficientSupplies };
+        println!("{}", use_error)
+    }
+    
+    #[test]
     fn test_supplies_constructor() {
         let supplies = Supplies::new();
     
@@ -195,6 +251,22 @@ mod tests {
         let mut supplies = Supplies::new();
         supplies.buy_oxen(200).unwrap();
         assert_eq!(500, supplies.money_left());
+    }
+
+    #[test]
+    fn test_supplies_spend_success() {
+        let mut supplies = Supplies::new();
+        supplies.spend(200).unwrap();
+        assert_eq!(500, supplies.money_left());
+    }
+
+    #[test]
+    fn test_supplies_spend_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.spend(1000).unwrap_err().reason;
+
+        assert_eq!(BuyErrorType::InsufficientFunds, reason);
+        assert_eq!(700, supplies.money);
     }
 
     #[test]
@@ -448,5 +520,41 @@ mod tests {
         assert_eq!(75, supplies.ammo_left());
         assert_eq!(100, supplies.clothes_left());
         assert_eq!(150, supplies.misc_left());
+    }
+
+    #[test]
+    fn test_use_misc() {
+        let mut supplies = Supplies::new();
+        supplies.buy_misc(200);
+        supplies.use_misc(10);
+        assert_eq!(190, supplies.misc_left());
+    }
+
+    #[test]
+    fn test_use_misc_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.use_misc(10).unwrap_err().reason;
+
+        assert_eq!(UseErrorType::InsufficientSupplies, reason);
+        assert_eq!(700, supplies.money);
+        assert_eq!(0, supplies.misc);
+    }
+
+    #[test]
+    fn test_use_food() {
+        let mut supplies = Supplies::new();
+        supplies.buy_food(200);
+        supplies.use_food(10);
+        assert_eq!(190, supplies.food_left());
+    }
+
+    #[test]
+    fn test_use_food_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.use_food(10).unwrap_err().reason;
+
+        assert_eq!(UseErrorType::InsufficientSupplies, reason);
+        assert_eq!(700, supplies.money);
+        assert_eq!(0, supplies.food);
     }
 }
