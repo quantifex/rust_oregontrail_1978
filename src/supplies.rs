@@ -52,6 +52,32 @@ impl fmt::Display for BuyError {
     }
 }
 
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum UseErrorType {
+    InsufficientSupplies,
+}
+
+#[derive(Debug)]
+pub struct UseError {
+    requested: u32,
+    available: u32,
+    min_required: u32,
+    max_allowed: u32,
+    reason: UseErrorType,
+}
+
+impl Error for UseError {}
+
+impl fmt::Display for UseError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.reason {
+            UseErrorType::InsufficientSupplies =>
+                write!(f, "\tUnable to use ${}, you only have ${} available.", self.requested, self.available),
+        }
+    }
+}
+
 impl fmt::Display for Supplies {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "\t{}\t{}\t{}\t{}\t{}\n\t{}\t{}\t{}\t{}\t{}\n",
@@ -157,6 +183,14 @@ impl Supplies {
         self.misc += (spend as f32 * (1.0 - self.cost_premium)) as u32;
         self.money -= spend;
         Ok(())    
+    }
+
+    pub fn use_misc(&mut self, misc: u32) -> Result<(), UseError> {
+        if misc > self.misc {
+            return Err(UseError{ min_required: 0, max_allowed: self.misc, requested: misc, available: self.misc, reason: UseErrorType::InsufficientSupplies });
+        }
+        self.misc -= misc;
+        Ok(())
     }
 
     pub fn buy<W: Write, R: BufRead>(&mut self, out: &mut W, input: &mut R) {

@@ -17,6 +17,8 @@ const ASK_OXEN_SPEND: &str = "How much do you want to spend on your \x1B[31mOxen
 fn main() {
     let mut stdout = stdout();
     let stdin = stdin();
+    let mut supplies = Supplies::new();
+    let mut trip = Trip::new();
     print_banner(&mut stdout);
 
     let _marksman = ask_marksman(&mut stdout, &mut stdin.lock());
@@ -26,7 +28,6 @@ fn main() {
     supplies.buy(&mut stdout, &mut stdin.lock());
     supplies.set_premium(0.333);
 
-    let mut trip = Trip::new();
     let mut fort_available = false;
     loop {
         println!("\n=================================================================");
@@ -38,7 +39,7 @@ fn main() {
         if supplies.food_left() <= 12 {
             println!("You'd better do some hunting or buy some food, and soon!!!!");
         }
-        if trip.need_healing() {
+        if trip.need_doctor() {
             if supplies.money_left() < 20 {
                 println!("You can't afford a doctor and died from your injuries.");
                 handle_death(&mut stdout, &mut stdin.lock());
