@@ -225,6 +225,12 @@ mod tests {
     }
 
     #[test]
+    fn test_useerror_insufficient() {
+        let use_error = UseError{ min_required: 0, max_allowed: 0, requested: 0, available: 0, reason: UseErrorType::InsufficientSupplies };
+        println!("{}", use_error)
+    }
+    
+    #[test]
     fn test_supplies_constructor() {
         let supplies = Supplies::new();
     
@@ -506,5 +512,23 @@ mod tests {
         assert_eq!(75, supplies.ammo_left());
         assert_eq!(100, supplies.clothes_left());
         assert_eq!(150, supplies.misc_left());
+    }
+
+    #[test]
+    fn test_use_misc() {
+        let mut supplies = Supplies::new();
+        supplies.buy_misc(200);
+        supplies.use_misc(10);
+        assert_eq!(190, supplies.misc_left());
+    }
+
+    #[test]
+    fn test_use_misc_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.use_misc(10).unwrap_err().reason;
+
+        assert_eq!(UseErrorType::InsufficientSupplies, reason);
+        assert_eq!(700, supplies.money);
+        assert_eq!(0, supplies.misc);
     }
 }
