@@ -539,4 +539,22 @@ mod tests {
         assert_eq!(700, supplies.money);
         assert_eq!(0, supplies.misc);
     }
+
+    #[test]
+    fn test_use_food() {
+        let mut supplies = Supplies::new();
+        supplies.buy_food(200);
+        supplies.use_food(10);
+        assert_eq!(190, supplies.food_left());
+    }
+
+    #[test]
+    fn test_use_food_insufficient() {
+        let mut supplies = Supplies::new();
+        let reason = supplies.use_food(10).unwrap_err().reason;
+
+        assert_eq!(UseErrorType::InsufficientSupplies, reason);
+        assert_eq!(700, supplies.money);
+        assert_eq!(0, supplies.food);
+    }
 }

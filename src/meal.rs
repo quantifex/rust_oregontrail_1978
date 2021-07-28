@@ -61,6 +61,12 @@ mod tests {
     }
 
     #[test]
+    #[should_panic]
+    fn meal_panic_food() {
+        MealChoice::to_food(MealChoice::Unknown);
+    }
+
+    #[test]
     fn meal_u32_unknown() {
         assert_eq!(MealChoice::Unknown, MealChoice::from_u32(0));
         assert_eq!(MealChoice::Unknown, MealChoice::from_u32(6));

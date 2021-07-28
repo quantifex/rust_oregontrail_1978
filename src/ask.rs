@@ -208,6 +208,16 @@ fn test_ask_marksman() {
 }
 
 #[test]
+fn test_ask_meal() {
+    let mut cout = Cursor::new(Vec::new());
+    let mut cin = Cursor::new(Vec::new());
+    cin.write(b"3").unwrap();
+    cin.seek(SeekFrom::Start(0)).unwrap();
+    let meal = ask_meal(&mut cout, &mut cin);
+    assert_eq!(MealChoice::Well, meal);
+}
+
+#[test]
 fn test_ask_continue() {
     let mut cout = Cursor::new(Vec::new());
     let mut cin = Cursor::new(Vec::new());
