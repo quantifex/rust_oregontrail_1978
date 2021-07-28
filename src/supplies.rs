@@ -158,6 +158,14 @@ impl Supplies {
         Ok(())    
     }
 
+    pub fn use_food(&mut self, food: u32) -> Result<(), UseError> {
+        if food > self.food {
+            return Err(UseError{ min_required: 0, max_allowed: self.food, requested: food, available: self.food, reason: UseErrorType::InsufficientSupplies });
+        }
+        self.food -= food;
+        Ok(())
+    }
+
     pub fn buy_ammo(&mut self, spend: u32) -> Result<(), BuyError> {
         if spend > self.money {
             return Err(BuyError{ min_required: 0, max_allowed: self.money, requested: spend, available: self.money, reason: BuyErrorType::InsufficientFunds });

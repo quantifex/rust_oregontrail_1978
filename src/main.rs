@@ -3,11 +3,13 @@ use crate::banner::*;
 use crate::ask::*;
 use crate::supplies::*;
 use crate::trip::*;
+use crate::meal::*;
 use crate::finish::*;
 
 mod banner;
 mod ask;
 mod marksman;
+mod meal;
 mod supplies;
 mod trip;
 mod finish;
@@ -35,8 +37,10 @@ fn main() {
             complete_trip(&mut stdout, &mut supplies);
             std::process::exit(0);
         }
+        // Travel along the Oregon Trail
+        trip.turn(supplies.oxen_left());
 
-        if supplies.food_left() <= 12 {
+        if supplies.food_left() <= 14 {
             println!("You'd better do some hunting or buy some food, and soon!!!!");
         }
         if trip.need_doctor() {
@@ -77,13 +81,12 @@ fn main() {
             println!("You ran out of food and starved to death.");
             handle_death(&mut stdout, &mut stdin.lock());
             std::process::exit(0);
+        } else {    // Time to eat
+            ask_ok!(supplies.use_food(MealChoice::to_food(ask_meal(&mut stdout, &mut stdin.lock()))));
         }
 
         // Determine if a fort will be available
         if supplies.ammo_left() > 39 { fort_available = true; }
-
-        // Travel along the Oregon Trail
-        trip.turn(supplies.oxen_left());
     }
 
 }

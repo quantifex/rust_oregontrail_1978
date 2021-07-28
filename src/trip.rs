@@ -3,16 +3,9 @@ use rand::rngs::ThreadRng;
 use chrono::{NaiveDate, Duration};
 use std::result::Result;
 use crate::*;
+use crate::meal::*;
 
 const HEALTH_ILLNESS: &str = "illness";
-
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum MealChoice {
-    Poorly,
-    Moderately,
-    Well,
-}
 
 #[derive(PartialEq)]
 #[derive(Debug)]
@@ -71,6 +64,7 @@ impl Trip {
             MealChoice::Poorly => 1,
             MealChoice::Moderately => 2,
             MealChoice::Well => 3,
+            _ => panic!("Invalid meal choice"),
         };
 
         if self.rng.gen_range(0..100) < (10 + 35 * (eat - 1)) { // Mild illness
